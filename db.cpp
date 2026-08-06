@@ -4,20 +4,27 @@
 
 class Database {
 public:
-  explicit Database(const std::string &filename) {
-    sqlite3_open(filename.c_str(), &_db);
+  explicit Database(const std::string &filename): Database(filename.c_str()) {}
+
+  explicit Database(const char* filename) {
+    sqlite3_open(filename, &_db);
   }
+
   ~Database() { sqlite3_close(_db); }
 
-  void query(std::string &query) {
-    char *errMsg;
+  void query(const std::string &sql) { 
+    query(sql.c_str());
+  }
 
-    int resultCode = sqlite3_exec(_db, query.c_str(), NULL, 0, &errMsg);
+  void query(const char* sql) {
+    char *errMsg = nullptr;
+
+    int resultCode = sqlite3_exec(_db, sql, nullptr, 0, &errMsg);
     if (resultCode != SQLITE_OK) {
       std::cout << errMsg << std::endl;
       sqlite3_free(errMsg);
     } else {
-      std::cout << "Sucess" << std::endl;
+      std::cout << "Success" << std::endl;
     }
   }
 

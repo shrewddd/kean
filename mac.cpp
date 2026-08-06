@@ -23,7 +23,7 @@ void initialize_listener() {
     kCGEventTapOptionDefault,
     eventMask, 
     CGEventCallback, 
-    NULL
+    nullptr  
   );
 
   if(!eventTap) {
