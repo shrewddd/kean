@@ -1,11 +1,13 @@
 #include <sqlite3.h>
-#include <string>
-#include "db.hpp"
+#include "core_collector.hpp"
+#include "mac.hpp"
 #include "mac.hpp"
 
 int main() {
-  const std::string filename = "db.sqlite3"; 
-  Database db {filename};
-  initialize_listener();
+  CoreCollector collector {};
+  MacEventSource source {};
+
+  source.run(collector);
+
   return 0;
 }

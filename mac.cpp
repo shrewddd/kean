@@ -1,32 +1,39 @@
-#include <Carbon/Carbon.h> 
+#include "mac.hpp"
+#include "core_collector.hpp"
+#include "keyboard_event.hpp"
 #include <ApplicationServices/ApplicationServices.h>
+#include <Carbon/Carbon.h>
 #include <iostream>
 
-CGEventRef CGEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon) {
-  if(type != kCGEventKeyDown && type != kCGEventFlagsChanged) {
+namespace {
+CGEventRef CGEventCallback(CGEventTapProxy proxy, 
+                           CGEventType type, 
+                           CGEventRef event, 
+                           void *refcon) {
+  auto *collector = static_cast<CoreCollector *>(refcon);
+
+  if (type != kCGEventKeyDown && type != kCGEventFlagsChanged) {
     return event;
   }
 
   CGEventFlags flags = CGEventGetFlags(event);
-  CGKeyCode keyCode = (CGKeyCode) CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
+  CGKeyCode keyCode = static_cast<CGKeyCode>(CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode));
 
   std::cout << keyCode << std::endl;
+
+  KeyboardEvent ke = {keyCode, flags};
+
+  collector->push(ke);
   return event;
 };
+} 
 
-void initialize_listener() {
+void MacEventSource::run(CoreCollector &collector) {
   CGEventMask eventMask = CGEventMaskBit(kCGEventKeyDown) | CGEventMaskBit(kCGEventFlagsChanged);
 
-  CFMachPortRef eventTap = CGEventTapCreate(
-    kCGSessionEventTap, 
-    kCGHeadInsertEventTap, 
-    kCGEventTapOptionDefault,
-    eventMask, 
-    CGEventCallback, 
-    nullptr  
-  );
+  CFMachPortRef eventTap = CGEventTapCreate(kCGSessionEventTap, kCGHeadInsertEventTap, kCGEventTapOptionDefault,eventMask, CGEventCallback, &collector);
 
-  if(!eventTap) {
+  if (!eventTap) {
     std::cout << "ERROR: Unable to initialize event tap handler" << std::endl;
     return;
   }
