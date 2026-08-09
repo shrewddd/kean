@@ -1,8 +1,9 @@
 #pragma once
+#include <filesystem>
 #include <string>
 
 struct Config {
-  std::string theme;
+  std::string theme {"dark"};
 };
 
-void load_config(Config& config);
+[[nodiscard]] Config load_config(std::filesystem::path config_file);
