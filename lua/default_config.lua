@@ -1,0 +1,5 @@
+config = {
+  ui = {
+    theme = "dark",
+  },
+}
