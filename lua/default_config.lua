@@ -1,5 +1,0 @@
-config = {
-  ui = {
-    theme = "dark",
-  },
-}
