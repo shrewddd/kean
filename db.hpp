@@ -1,4 +1,5 @@
 #pragma once
+#include "statement.hpp"
 #include <sqlite3.h>
 #include <string>
 
@@ -13,7 +14,8 @@ public:
   ~Database();
   void query(const std::string &sql);
   void query(const char* sql);
+  Statement prepare(const std::string_view sql);
 
 private:
-  sqlite3 *_db = nullptr;
+  sqlite3* db_ = nullptr;
 };
