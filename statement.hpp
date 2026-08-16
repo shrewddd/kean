@@ -6,6 +6,11 @@
 class Statement final {
 public:
 
+  enum class StepResult {
+    row,
+    done,
+  };
+
   Statement(const Statement&) = delete;
   Statement& operator=(const Statement&) = delete;
   Statement(Statement&& other) noexcept;
@@ -17,6 +22,13 @@ public:
   void bind_null(int index);
   void reset();
   void clear_bindings();
+
+  [[nodiscard]] StepResult step();
+
+  [[nodiscard]] std::int64_t column_int64(int index);
+  [[nodiscard]] std::int32_t column_int(int index);
+  [[nodiscard]] double column_double(int index);
+  [[nodiscard]] const unsigned char * column_text(int index);
 
 private:
   friend class Database;

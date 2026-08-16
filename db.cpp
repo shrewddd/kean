@@ -11,6 +11,12 @@ Database::Database(const char* filename) {
     sqlite3_close_v2(db_);
     throw std::runtime_error("sqlite3_open failed: " + msg);
   }
+
+  if (int rc = sqlite3_db_config(db_, SQLITE_DBCONFIG_ENABLE_FKEY, 1, nullptr); rc != SQLITE_OK) {
+    sqlite3_close_v2(db_);
+    throw std::runtime_error("sqlite3_db_config failed");
+  }
+
 }
 
 Database::Database(Database&& other) noexcept : db_(other.db_) {
@@ -29,6 +35,8 @@ Database& Database::operator=(Database&& other) noexcept {
 Database::~Database() { 
   sqlite3_close_v2(db_);
 }
+
+void Database::query(const std::string_view &sql) { query(sql.data()); }
 
 void Database::query(const std::string &sql) { query(sql.c_str()); }
 

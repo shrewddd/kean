@@ -12,6 +12,7 @@ public:
   Database(Database&& other) noexcept;
   Database& operator=(Database&& other) noexcept;
   ~Database();
+  void query(const std::string_view &sql); 
   void query(const std::string &sql);
   void query(const char* sql);
   Statement prepare(const std::string_view sql);
